@@ -1,4 +1,6 @@
 plugins {
+    id 'org.flywaydb.flyway' version '7.9.1'
+    id 'nu.studer.jooq' version '5.2.1'
     id 'org.springframework.boot' version '2.5.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
@@ -9,6 +11,8 @@ version = '1.0.0-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
+    flywayMigration
+
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -21,22 +25,91 @@ repositories {
 ext {
     lombokVersion = '1.18.20'
     postgresqlVersion = '42.2.20'
+    mapStructVersion = '1.4.2.Final'
+}
+
+compileJava {
+    options.compilerArgs = [
+            '-Amapstruct.defaultComponentModel=spring'
+    ]
 }
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-jooq"
+    implementation "org.mapstruct:mapstruct:$mapStructVersion"
+
+    flywayMigration "org.postgresql:postgresql:$postgresqlVersion"
+    jooqGenerator "org.postgresql:postgresql:$postgresqlVersion"
 
     compileOnly "org.projectlombok:lombok:$lombokVersion"
+
     runtimeOnly "io.micrometer:micrometer-registry-prometheus"
     runtimeOnly "org.postgresql:postgresql:$postgresqlVersion"
 
-    annotationProcessor "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.mapstruct:mapstruct-processor:$mapStructVersion"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 }
 
 test {
     useJUnitPlatform()
+}
+
+flyway {
+    configurations = ['flywayMigration']
+    url = System.getenv('DATASOURCE_URL')
+    user = System.getenv('DATASOURCE_USERNAME')
+    password = System.getenv('DATASOURCE_PASSWORD')
+}
+
+jooq {
+    configurations {
+        main {
+            generationTool {
+                logging = org.jooq.meta.jaxb.Logging.WARN
+                jdbc {
+                    driver = 'org.postgresql.Driver'
+                    url = flyway.url
+                    user = flyway.user
+                    password = flyway.password
+                }
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.postgres.PostgresDatabase'
+                        inputSchema = 'public'
+                    }
+                    generate {
+                        pojos = 'true'
+                    }
+                    target {
+                        packageName = 'ru.vladigeras.springjooqopenshift'
+                        directory = 'build/generated/sources'
+                    }
+                    strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
+                }
+            }
+        }
+    }
+}
+
+// configure jOOQ task such that it only executes when something has changed that potentially affects the generated JOOQ sources
+// - the jOOQ configuration has changed (Jdbc, Generator, Strategy, etc.)
+// - the classpath used to execute the jOOQ generation tool has changed (jOOQ library, database driver, strategy classes, etc.)
+// - the schema files from which the schema is generated and which is used by jOOQ to generate the sources have changed (scripts added, modified, etc.)
+tasks.named('generateJooq').configure {
+//     ensure database schema has been prepared by Flyway before generating the jOOQ sources
+    dependsOn tasks.named('flywayMigrate')
+
+//     declare Flyway migration scripts as inputs on the jOOQ task
+    inputs.files(fileTree('src/main/resources/db/migration'))
+            .withPropertyName('migrations')
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+
+//     make jOOQ task participate in incremental builds and build caching
+    allInputsDeclared = true
+    outputs.cacheIf { true }
 }

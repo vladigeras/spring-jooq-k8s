@@ -1,3 +1,9 @@
+spring:
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/cars}
+    username: ${DATASOURCE_USERNAME:cars_user}
+    password: ${DATASOURCE_PASSWORD:cars_password}
+    driver-class-name: org.postgresql.Driver
 management:
   endpoints:
     web:

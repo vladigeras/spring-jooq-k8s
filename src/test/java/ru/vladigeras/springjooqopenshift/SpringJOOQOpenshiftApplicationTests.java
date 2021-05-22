@@ -1,10 +1,10 @@
-package ru.vladigeras.springjooq;
+package ru.vladigeras.springjooqopenshift;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SpringJOOQApplicationTests {
+class SpringJOOQOpenshiftApplicationTests {
 
 	@Test
 	void contextLoads() {
