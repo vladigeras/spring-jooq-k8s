@@ -12,7 +12,7 @@ public interface CountryMapper {
 	@Mapping(target = "id", source = "country.id")
 	@Mapping(target = "createdAt", source = "country.createdAt")
 	@Mapping(target = "title", source = "country.title")
-	@Mapping(target = "code", expression = "java(CountryCode.valueOf(country.getCode()))")
+	@Mapping(target = "code", source = "country.code")
 	@BeanMapping(ignoreByDefault = true)
 	CountryDto map(Countries country);
 }

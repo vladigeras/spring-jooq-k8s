@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 import ru.vladigeras.springjooqopenshift.model.dto.CreateCarDto;
+import ru.vladigeras.springjooqopenshift.model.entity.CarEntity;
 import ru.vladigeras.springjooqopenshift.model.enumeration.CountryCode;
 import ru.vladigeras.springjooqopenshift.repository.CarRepository;
-import ru.vladigeras.springjooqopenshift.tables.pojos.Cars;
 
 @Slf4j
 @Repository
@@ -28,16 +28,22 @@ public class CarRepositoryImpl implements CarRepository {
 	}
 
 	@Override
-	public List<Cars> findAll() {
-		// TODO: fetch child entity
-		return dslContext.selectFrom(CARS).fetchInto(Cars.class);
+	public List<CarEntity> findAll() {
+		return dslContext.select(CARS.fields())
+			.select(COUNTRIES.ID.as("country.id"), COUNTRIES.CREATED_AT.as("country.createdAt"),
+				COUNTRIES.TITLE.as("country.title"), COUNTRIES.CODE.as("country.code"))
+			.from(CARS).join(COUNTRIES)
+			.on(CARS.COUNTRY_ID.eq(COUNTRIES.ID)).fetchInto(CarEntity.class);
 	}
 
 	@Override
-	public List<Cars> findAllByCountryCode(CountryCode country) {
-		// TODO: fetch child entity
-		return dslContext.select().from(CARS).join(COUNTRIES).on(CARS.COUNTRY_ID.eq(COUNTRIES.ID))
+	public List<CarEntity> findAllByCountryCode(CountryCode country) {
+		return dslContext.select(CARS.fields())
+			.select(COUNTRIES.ID.as("country.id"), COUNTRIES.CREATED_AT.as("country.createdAt"),
+				COUNTRIES.TITLE.as("country.title"), COUNTRIES.CODE.as("country.code"))
+			.from(CARS).join(COUNTRIES)
+			.on(CARS.COUNTRY_ID.eq(COUNTRIES.ID))
 			.where(COUNTRIES.CODE.eq(country.name()))
-			.fetchInto(Cars.class);
+			.fetchInto(CarEntity.class);
 	}
 }

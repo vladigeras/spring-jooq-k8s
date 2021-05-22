@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 import ru.vladigeras.springjooqopenshift.mapper.CarMapper;
 import ru.vladigeras.springjooqopenshift.model.dto.CarDto;
 import ru.vladigeras.springjooqopenshift.model.dto.CreateCarDto;
+import ru.vladigeras.springjooqopenshift.model.entity.CarEntity;
 import ru.vladigeras.springjooqopenshift.model.enumeration.CountryCode;
 import ru.vladigeras.springjooqopenshift.repository.CarRepository;
 import ru.vladigeras.springjooqopenshift.repository.CountryRepository;
 import ru.vladigeras.springjooqopenshift.service.CarService;
-import ru.vladigeras.springjooqopenshift.tables.pojos.Cars;
 
 @Slf4j
 @Service
@@ -36,7 +36,7 @@ public class CarServiceImpl implements CarService {
 
 	@Override
 	public List<CarDto> get(CountryCode country) {
-		List<Cars> result;
+		List<CarEntity> result;
 		if (nonNull(country)) {
 			result = carRepository.findAllByCountryCode(country);
 		} else {
