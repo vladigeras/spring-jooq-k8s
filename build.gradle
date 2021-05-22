@@ -1,4 +1,5 @@
 plugins {
+    id 'com.google.cloud.tools.jib' version '3.0.0'
     id 'org.flywaydb.flyway' version '7.9.1'
     id 'nu.studer.jooq' version '5.2.1'
     id 'org.springframework.boot' version '2.5.0'
@@ -112,4 +113,25 @@ tasks.named('generateJooq').configure {
 //     make jOOQ task participate in incremental builds and build caching
     allInputsDeclared = true
     outputs.cacheIf { true }
+}
+
+tasks {
+    build {
+        dependsOn(tasks.jib)
+    }
+}
+
+jib {
+    from {
+        image = 'openjdk:11.0.10-jdk-oraclelinux8'
+    }
+    to {
+        image = 'gerasimovv88/spring-jooq-openshift'
+        tags = ['latest', project.version]
+    }
+    container {
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        mainClass = "ru.vladigeras.springjooqopenshift.SpringJOOQOpenshiftApplication"
+    }
+    allowInsecureRegistries = false
 }
