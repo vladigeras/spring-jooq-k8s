@@ -87,7 +87,7 @@ jooq {
                         pojos = 'true'
                     }
                     target {
-                        packageName = 'ru.vladigeras.springjooqopenshift'
+                        packageName = 'ru.vladigeras.springjooqk8s'
                         directory = 'build/generated/sources'
                     }
                     strategy.name = "org.jooq.codegen.DefaultGeneratorStrategy"
@@ -126,13 +126,13 @@ jib {
         image = 'openjdk:11.0.10-jdk-oraclelinux8'
     }
     to {
-        image = 'gerasimovv88/spring-jooq-openshift'
+        image = 'gerasimovv88/spring-jooq-k8s'
         tags = ['latest', project.version]
     }
     container {
         creationTime = "USE_CURRENT_TIMESTAMP"
         ports = ["8080"]
-        mainClass = "ru.vladigeras.springjooqopenshift.SpringJOOQOpenshiftApplication"
+        mainClass = "ru.vladigeras.springjooqk8s.SpringJOOQK8SApplication"
     }
     allowInsecureRegistries = false
 }

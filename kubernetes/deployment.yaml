@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-jooq-openshift-deployment
+  name: spring-jooq-k8s-deployment
   labels:
-    app: spring-jooq-openshift-deployment
+    app: spring-jooq-k8s-deployment
 spec:
   replicas: 2
   strategy:
@@ -13,48 +13,48 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: spring-jooq-openshift-deployment
+      app: spring-jooq-k8s-deployment
   template:
     metadata:
       labels:
-        app: spring-jooq-openshift-deployment
+        app: spring-jooq-k8s-deployment
     spec:
       containers:
-        - name: spring-jooq-openshift-deployment
+        - name: spring-jooq-k8s-deployment
           imagePullPolicy: Always
-          image: gerasimovv88/spring-jooq-openshift:1.0.0-SNAPSHOT
+          image: gerasimovv88/spring-jooq-k8s:1.0.0-SNAPSHOT
           ports:
             - containerPort: 8080
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 8080
-            initialDelaySeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 3
-            periodSeconds: 5
           livenessProbe:
             tcpSocket:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 7
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
             initialDelaySeconds: 15
+            periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 3
-            periodSeconds: 7
           env:
             - name: "DATASOURCE_URL"
               valueFrom:
                 configMapKeyRef:
-                  name: spring-jooq-openshift-config-map
+                  name: spring-jooq-k8s-config-map
                   key: datasource_url
             - name: "DATASOURCE_USERNAME"
               valueFrom:
                 secretKeyRef:
-                  name: spring-jooq-openshift-secret
+                  name: spring-jooq-k8s-secret
                   key: datasource_username
             - name: "DATASOURCE_PASSWORD"
               valueFrom:
                 secretKeyRef:
-                  name: spring-jooq-openshift-secret
+                  name: spring-jooq-k8s-secret
                   key: datasource_password
