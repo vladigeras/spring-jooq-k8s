@@ -12,6 +12,8 @@ management:
   endpoint:
     health:
       show-details: always
+      probes:
+        enabled: true
   metrics:
     export:
       prometheus:
@@ -19,3 +21,6 @@ management:
     distribution:
       percentiles-histogram:
         "[http.server.requests]": true
+      percentiles:
+        "[http.server.requests]": 0.95, 0.99
+

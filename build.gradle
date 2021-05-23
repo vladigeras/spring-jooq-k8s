@@ -131,6 +131,7 @@ jib {
     }
     container {
         creationTime = "USE_CURRENT_TIMESTAMP"
+        ports = ["8080"]
         mainClass = "ru.vladigeras.springjooqopenshift.SpringJOOQOpenshiftApplication"
     }
     allowInsecureRegistries = false
