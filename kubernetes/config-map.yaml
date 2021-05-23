@@ -1,6 +1,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: spring-jooq-openshift-config-map
+  name: spring-jooq-k8s-config-map
 data:
   datasource_url: "jdbc:postgresql://192.168.0.13:5432/cars"
