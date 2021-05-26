@@ -26,4 +26,3 @@ management:
         "[http.server.requests]": true
       percentiles:
         "[http.server.requests]": 0.95, 0.99
-

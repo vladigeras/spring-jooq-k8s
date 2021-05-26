@@ -20,13 +20,12 @@ spec:
         app: spring-jooq-k8s-deployment
     spec:
       containers:
-        - name: spring-jooq-k8s-deployment
+        - name: spring-jooq-k8s
           imagePullPolicy: Always
           image: gerasimovv88/spring-jooq-k8s:1.0.0-SNAPSHOT
           ports:
             - containerPort: 8080
           livenessProbe:
-            tcpSocket:
             httpGet:
               path: /actuator/health/liveness
               port: 8080
@@ -58,3 +57,14 @@ spec:
                 secretKeyRef:
                   name: spring-jooq-k8s-secret
                   key: datasource_password
+          # replace default logger config from sources for logger config from config maps
+          volumeMounts:
+            - name: logback-config
+              mountPath: "/app/resources"
+      volumes:
+        - name: logback-config
+          configMap:
+            name: spring-jooq-k8s-config-map
+            items:
+              - key: logback.xml
+                path: logback.xml
