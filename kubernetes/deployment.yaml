@@ -57,10 +57,9 @@ spec:
                 secretKeyRef:
                   name: spring-jooq-k8s-secret
                   key: datasource_password
-          # replace default logger config from sources for logger config from config maps
           volumeMounts:
             - name: logback-config
-              mountPath: "/app/resources"
+              mountPath: "/app/config"
       volumes:
         - name: logback-config
           configMap:
