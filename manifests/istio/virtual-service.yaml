@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: spring-jooq-k8s-virtual-service
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - spring-jooq-k8s-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /app
+      rewrite:
+        uri: " "
+      route:
+        - destination:
+            host: spring-jooq-k8s-service
+            port:
+              number: 8080

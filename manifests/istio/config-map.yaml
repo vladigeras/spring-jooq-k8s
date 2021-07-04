@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-jooq-k8s-config-map
+data:
+  datasource_url: "jdbc:postgresql://192.168.0.14:5432/cars"
+  logback.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <configuration>
+      <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+          <pattern>
+            %d{yyyy.MM.dd HH:mm:ss} [%thread] %5p %logger{36} - %msg%n
+          </pattern>
+        </encoder>
+      </appender>
+
+      <root level="info">
+        <appender-ref ref="CONSOLE"/>
+      </root>
+    </configuration>
